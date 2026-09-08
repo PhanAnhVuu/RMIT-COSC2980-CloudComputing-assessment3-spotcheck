@@ -1,6 +1,6 @@
 # =============================================================================
 # COSC2980/2638 Cloud Computing - Assessment 3
-# Seeds the "spaces" table with sample study spaces.
+# Seeds the "spaces" table with sample study spaces from RMIT Hanoi Campus.
 # =============================================================================
 
 import boto3
@@ -8,12 +8,16 @@ import boto3
 from config import AWS_REGION, SPACES_TABLE
 
 SAMPLE_SPACES = [
-    {"space_id": "lib-2f-desk-01", "name": "Library 2F Desk 1", "floor": "2", "building": "Library", "capacity": 1},
-    {"space_id": "lib-2f-desk-02", "name": "Library 2F Desk 2", "floor": "2", "building": "Library", "capacity": 1},
-    {"space_id": "lib-2f-room-a", "name": "Library 2F Group Room A", "floor": "2", "building": "Library", "capacity": 6},
-    {"space_id": "lib-3f-desk-01", "name": "Library 3F Desk 1", "floor": "3", "building": "Library", "capacity": 1},
-    {"space_id": "lab-3-desk-04", "name": "Lab 3 Desk 4", "floor": "1", "building": "Building 14", "capacity": 1},
-    {"space_id": "lab-3-desk-05", "name": "Lab 3 Desk 5", "floor": "1", "building": "Building 14", "capacity": 1},
+    {"space_id": "1-1-309", "name": "Student Centre", "floor": "1", "building": "Hanoi Campus", "capacity": 10, "floorplan_key": "floorplans/level-1.jpg"},
+    {"space_id": "1-1-006", "name": "International Office", "floor": "1", "building": "Hanoi Campus", "capacity": 4, "floorplan_key": "floorplans/level-1.jpg"},
+    {"space_id": "1-1-008", "name": "Meeting Room (Level 1)", "floor": "1", "building": "Hanoi Campus", "capacity": 6, "floorplan_key": "floorplans/level-1.jpg"},
+    {"space_id": "1-2-006", "name": "Library Study Area", "floor": "2", "building": "Hanoi Campus", "capacity": 20, "floorplan_key": "floorplans/level-2.jpg"},
+    {"space_id": "1-2-010", "name": "Library Guest Room", "floor": "2", "building": "Hanoi Campus", "capacity": 4, "floorplan_key": "floorplans/level-2.jpg"},
+    {"space_id": "1-2-013", "name": "Meeting Room (Library)", "floor": "2", "building": "Hanoi Campus", "capacity": 6, "floorplan_key": "floorplans/level-2.jpg"},
+    {"space_id": "1-2-001", "name": "Student Access Lab", "floor": "2", "building": "Hanoi Campus", "capacity": 15, "floorplan_key": "floorplans/level-2.jpg"},
+    {"space_id": "1-2-016", "name": "Mac Lab", "floor": "2", "building": "Hanoi Campus", "capacity": 12, "floorplan_key": "floorplans/level-2.jpg"},
+    {"space_id": "1-10-001", "name": "Lab Room (SBM)", "floor": "10", "building": "Hanoi Campus", "capacity": 10, "floorplan_key": "floorplans/level-3.jpg"},
+    {"space_id": "1-10-002", "name": "Lab Room (SCD)", "floor": "10", "building": "Hanoi Campus", "capacity": 10, "floorplan_key": "floorplans/level-3.jpg"},
 ]
 
 
