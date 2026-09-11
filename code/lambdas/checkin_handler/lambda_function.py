@@ -24,6 +24,11 @@ dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 checkins_table = dynamodb.Table(CHECKINS_TABLE)
 kinesis = boto3.client("kinesis", region_name=AWS_REGION)
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+}
+
 
 def lambda_handler(event, context):
     body = json.loads(event.get("body") or "{}")
@@ -33,12 +38,12 @@ def lambda_handler(event, context):
     if not space_id or not user_email:
         return {
             "statusCode": 400,
+            "headers": CORS_HEADERS,
             "body": json.dumps({"error": "space_id and user_email are required"}),
         }
 
     timestamp = datetime.now(timezone.utc).isoformat()
 
-    # 1. Record the event in DynamoDB (this becomes the live + historical record)
     checkins_table.put_item(
         Item={
             "space_id": space_id,
@@ -48,7 +53,6 @@ def lambda_handler(event, context):
         }
     )
 
-    # 2. Also push the event to Kinesis, for any real-time consumers
     kinesis.put_record(
         StreamName=KINESIS_STREAM,
         Data=json.dumps({
@@ -62,5 +66,6 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
+        "headers": CORS_HEADERS,
         "body": json.dumps({"message": f"Checked in to {space_id}", "timestamp": timestamp}),
     }

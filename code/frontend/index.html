@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpotCheck</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>SpotCheck</h1>
+  <p class="lede">Real-time study space availability - RMIT Hanoi Campus</p>
+
+  <!-- Login section -->
+  <div id="login-section" class="card">
+    <h2>Login</h2>
+    <div id="login-error" class="error" style="display:none;"></div>
+    <label for="login-email">Email</label>
+    <input type="text" id="login-email">
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password">
+    <button onclick="doLogin()">Login</button>
+    <p><a href="#" onclick="showRegister()">Don't have an account? Register</a></p>
+  </div>
+
+  <!-- Register section -->
+  <div id="register-section" class="card" style="display:none;">
+    <h2>Register</h2>
+    <div id="register-error" class="error" style="display:none;"></div>
+    <label for="register-email">Email</label>
+    <input type="text" id="register-email">
+    <label for="register-username">Username</label>
+    <input type="text" id="register-username">
+    <label for="register-password">Password</label>
+    <input type="password" id="register-password">
+    <button onclick="doRegister()">Register</button>
+    <p><a href="#" onclick="showLogin()">Already have an account? Login</a></p>
+  </div>
+
+  <!-- Main dashboard, shown after login -->
+  <div id="main-section" class="card" style="display:none;">
+    <div class="topbar">
+      <span>Logged in as <strong id="user-name-display"></strong></span>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <h2>Study Spaces</h2>
+    <button onclick="loadAvailability()">Refresh</button>
+    <div id="spaces-list"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

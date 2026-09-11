@@ -22,17 +22,22 @@ dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 spaces_table = dynamodb.Table(SPACES_TABLE)
 checkins_table = dynamodb.Table(CHECKINS_TABLE)
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+}
+
 
 def latest_status(space_id):
     """Query the checkins table for the most recent event for this space."""
     result = checkins_table.query(
         KeyConditionExpression=Key("space_id").eq(space_id),
-        ScanIndexForward=False,   # sort descending by sort key (timestamp)
-        Limit=1,                  # only need the single most recent event
+        ScanIndexForward=False,
+        Limit=1,
     )
     items = result.get("Items", [])
     if not items:
-        return "available"        # no events yet -> assume free
+        return "available"
     return "occupied" if items[0]["status"] == "checked_in" else "available"
 
 
@@ -51,6 +56,6 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
+        "headers": CORS_HEADERS,
         "body": json.dumps({"spaces": results}),
     }

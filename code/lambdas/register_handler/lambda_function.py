@@ -21,6 +21,11 @@ USERS_TABLE = os.environ.get("USERS_TABLE", "spotcheck_users")
 dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 users_table = dynamodb.Table(USERS_TABLE)
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+}
+
 
 def lambda_handler(event, context):
     body = json.loads(event.get("body") or "{}")
@@ -31,6 +36,7 @@ def lambda_handler(event, context):
     if not email or not user_name or not password:
         return {
             "statusCode": 400,
+            "headers": CORS_HEADERS,
             "body": json.dumps({"error": "email, user_name and password are required"}),
         }
 
@@ -43,11 +49,13 @@ def lambda_handler(event, context):
         if err.response["Error"]["Code"] == "ConditionalCheckFailedException":
             return {
                 "statusCode": 409,
+                "headers": CORS_HEADERS,
                 "body": json.dumps({"error": "The email already exists"}),
             }
         raise
 
     return {
         "statusCode": 200,
+        "headers": CORS_HEADERS,
         "body": json.dumps({"message": "Registered successfully"}),
     }
