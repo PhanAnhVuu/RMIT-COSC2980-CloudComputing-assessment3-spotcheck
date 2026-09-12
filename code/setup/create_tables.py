@@ -10,7 +10,7 @@
 import boto3
 from botocore.exceptions import ClientError
 
-from config import AWS_REGION, USERS_TABLE, SPACES_TABLE, CHECKINS_TABLE
+from config import AWS_REGION, USERS_TABLE, SPACES_TABLE, CHECKINS_TABLE, ACTIVITY_TABLE
 
 
 def create_table_if_missing(dynamodb, table_name, key_schema, attribute_defs):
@@ -55,6 +55,18 @@ def main():
         attribute_defs=[
             {"AttributeName": "space_id", "AttributeType": "S"},
             {"AttributeName": "timestamp", "AttributeType": "S"},
+        ],
+    )
+
+    create_table_if_missing(
+        dynamodb, ACTIVITY_TABLE,
+        key_schema=[
+            {"AttributeName": "space_id", "KeyType": "HASH"},
+            {"AttributeName": "date", "KeyType": "RANGE"},
+        ],
+        attribute_defs=[
+            {"AttributeName": "space_id", "AttributeType": "S"},
+            {"AttributeName": "date", "AttributeType": "S"},
         ],
     )
 

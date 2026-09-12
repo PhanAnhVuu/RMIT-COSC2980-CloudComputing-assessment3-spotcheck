@@ -17,3 +17,4 @@ S3_BUCKET = os.environ.get("S3_BUCKET", f"{STUDENT_ID}-spotcheck-floorplans")
 
 # Kinesis stream that receives check-in/check-out events in real time.
 KINESIS_STREAM = os.environ.get("KINESIS_STREAM", "spotcheck-events")
+ACTIVITY_TABLE = os.environ.get("ACTIVITY_TABLE", "spotcheck_activity_counts")
