@@ -122,3 +122,24 @@ async function doCheckAction(spaceId, action) {
 
   loadAvailability();
 }
+
+async function loadTrends() {
+  const res = await fetch(`${API_BASE}/trends`);
+  const data = await res.json();
+
+  const spacesDiv = document.getElementById("trends-spaces");
+  spacesDiv.innerHTML = "";
+  data.busiest_spaces.forEach((row) => {
+    const p = document.createElement("p");
+    p.textContent = `${row.space_id}: ${row.total_checkins} check-ins`;
+    spacesDiv.appendChild(p);
+  });
+
+  const hoursDiv = document.getElementById("trends-hours");
+  hoursDiv.innerHTML = "";
+  data.busiest_hours.forEach((row) => {
+    const p = document.createElement("p");
+    p.textContent = `${row.hour_of_day}:00 - ${row.total_checkins} check-ins`;
+    hoursDiv.appendChild(p);
+  });
+}
