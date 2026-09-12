@@ -76,26 +76,49 @@ async function loadAvailability() {
   const list = document.getElementById("spaces-list");
   list.innerHTML = "";
 
-  data.spaces.forEach((space) => {
+  const sorted = data.spaces.slice().sort((a, b) => {
+    const floorDiff = Number(a.floor) - Number(b.floor);
+    if (floorDiff !== 0) return floorDiff;
+    return a.space_id.localeCompare(b.space_id, undefined, { numeric: true });
+  });
+
+  sorted.forEach((space) => {
     const row = document.createElement("div");
     row.className = "space-row";
     const statusClass = space.status === "available" ? "status-available" : "status-occupied";
-    const buttonLabel = space.status === "available" ? "Check in" : "Check out";
-    const action = space.status === "available" ? "checkin" : "checkout";
+    const isMine = space.checked_in_by === currentUser.email;
+
+    let label = space.status;
+    if (isMine) label = "Checked in by you";
+
+    let buttonHtml = "";
+    if (space.status === "available") {
+      buttonHtml = `<button onclick="doCheckAction('${space.space_id}', 'checkin')">Check in</button>`;
+    } else if (isMine) {
+      buttonHtml = `<button onclick="doCheckAction('${space.space_id}', 'checkout')">Check out</button>`;
+    }
 
     row.innerHTML = `
-      <span>${space.name} (Floor ${space.floor}) - <span class="${statusClass}">${space.status}</span></span>
-      <button onclick="doCheckAction('${space.space_id}', '${action}')">${buttonLabel}</button>
+      <span>Floor ${space.floor} - ${space.name} - <span class="${statusClass}">${label}</span></span>
+      ${buttonHtml}
     `;
     list.appendChild(row);
   });
 }
 
 async function doCheckAction(spaceId, action) {
-  await fetch(`${API_BASE}/${action}`, {
+  const res = await fetch(`${API_BASE}/${action}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ space_id: spaceId, user_email: currentUser.email }),
   });
+  console.log("Response status:", res.status);
+  const data = await res.json();
+  console.log("Response data:", data);
+
+  if (res.status !== 200) {
+    alert(data.error || "Something went wrong");
+  }
+
   loadAvailability();
 }

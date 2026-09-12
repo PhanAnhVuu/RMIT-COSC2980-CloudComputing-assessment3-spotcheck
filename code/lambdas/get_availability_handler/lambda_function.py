@@ -28,17 +28,14 @@ CORS_HEADERS = {
 }
 
 
-def latest_status(space_id):
-    """Query the checkins table for the most recent event for this space."""
+def latest_event(space_id):
     result = checkins_table.query(
         KeyConditionExpression=Key("space_id").eq(space_id),
         ScanIndexForward=False,
         Limit=1,
     )
     items = result.get("Items", [])
-    if not items:
-        return "available"
-    return "occupied" if items[0]["status"] == "checked_in" else "available"
+    return items[0] if items else None
 
 
 def lambda_handler(event, context):
@@ -46,12 +43,21 @@ def lambda_handler(event, context):
 
     results = []
     for space in spaces:
+        latest = latest_event(space["space_id"])
+        if latest and latest.get("status") == "checked_in":
+            status = "occupied"
+            checked_in_by = latest.get("user_email")
+        else:
+            status = "available"
+            checked_in_by = None
+
         results.append({
             "space_id": space["space_id"],
             "name": space["name"],
             "floor": space["floor"],
             "building": space["building"],
-            "status": latest_status(space["space_id"]),
+            "status": status,
+            "checked_in_by": checked_in_by,
         })
 
     return {

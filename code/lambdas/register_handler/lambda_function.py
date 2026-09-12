@@ -10,6 +10,7 @@
 
 import json
 import os
+import re
 
 import boto3
 from boto3.dynamodb.conditions import Attr
@@ -26,6 +27,8 @@ CORS_HEADERS = {
     "Content-Type": "application/json",
 }
 
+EMAIL_PATTERN = re.compile(r"^[\w.+-]+@student\.rmit\.edu\.au$")
+
 
 def lambda_handler(event, context):
     body = json.loads(event.get("body") or "{}")
@@ -38,6 +41,13 @@ def lambda_handler(event, context):
             "statusCode": 400,
             "headers": CORS_HEADERS,
             "body": json.dumps({"error": "email, user_name and password are required"}),
+        }
+
+    if not EMAIL_PATTERN.match(email):
+        return {
+            "statusCode": 400,
+            "headers": CORS_HEADERS,
+            "body": json.dumps({"error": "Email must be a valid @student.rmit.edu.au address"}),
         }
 
     try:

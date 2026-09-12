@@ -15,6 +15,7 @@ import os
 from datetime import datetime, timezone
 
 import boto3
+from boto3.dynamodb.conditions import Key
 
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 CHECKINS_TABLE = os.environ.get("CHECKINS_TABLE", "spotcheck_checkins")
@@ -30,6 +31,16 @@ CORS_HEADERS = {
 }
 
 
+def get_latest_event(space_id):
+    result = checkins_table.query(
+        KeyConditionExpression=Key("space_id").eq(space_id),
+        ScanIndexForward=False,
+        Limit=1,
+    )
+    items = result.get("Items", [])
+    return items[0] if items else None
+
+
 def lambda_handler(event, context):
     body = json.loads(event.get("body") or "{}")
     space_id = body.get("space_id")
@@ -40,6 +51,22 @@ def lambda_handler(event, context):
             "statusCode": 400,
             "headers": CORS_HEADERS,
             "body": json.dumps({"error": "space_id and user_email are required"}),
+        }
+
+    latest = get_latest_event(space_id)
+
+    if latest is None or latest.get("status") != "checked_in":
+        return {
+            "statusCode": 409,
+            "headers": CORS_HEADERS,
+            "body": json.dumps({"error": "This space is not currently checked in"}),
+        }
+
+    if latest.get("user_email") != user_email:
+        return {
+            "statusCode": 403,
+            "headers": CORS_HEADERS,
+            "body": json.dumps({"error": "You are not the one checked into this space"}),
         }
 
     timestamp = datetime.now(timezone.utc).isoformat()
