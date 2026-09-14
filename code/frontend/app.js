@@ -128,18 +128,39 @@ async function loadTrends() {
   const data = await res.json();
 
   const spacesDiv = document.getElementById("trends-spaces");
-  spacesDiv.innerHTML = "";
-  data.busiest_spaces.forEach((row) => {
-    const p = document.createElement("p");
-    p.textContent = `${row.space_id}: ${row.total_checkins} check-ins`;
-    spacesDiv.appendChild(p);
-  });
+  spacesDiv.innerHTML = buildTable(
+    ["Space", "Total Check-ins"],
+    data.busiest_spaces.map((row) => [row.space_id, row.total_checkins])
+  );
 
   const hoursDiv = document.getElementById("trends-hours");
-  hoursDiv.innerHTML = "";
-  data.busiest_hours.forEach((row) => {
-    const p = document.createElement("p");
-    p.textContent = `${row.hour_of_day}:00 - ${row.total_checkins} check-ins`;
-    hoursDiv.appendChild(p);
-  });
+  hoursDiv.innerHTML = buildTable(
+    ["Hour of Day", "Total Check-ins"],
+    data.busiest_hours.map((row) => [`${row.hour_of_day}:00`, row.total_checkins])
+  );
+}
+
+function buildTable(headers, rows) {
+  const headerHtml = headers.map((h) => `<th>${h}</th>`).join("");
+  const rowsHtml = rows
+    .map((r) => `<tr>${r.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
+    .join("");
+  return `<table class="trends-table"><thead><tr>${headerHtml}</tr></thead><tbody>${rowsHtml}</tbody></table>`;
+}
+
+
+async function loadWeather() {
+  const res = await fetch(`${API_BASE}/weather`);
+  const data = await res.json();
+  document.getElementById("weather-display").innerHTML =
+    `<strong>${data.city} Weather</strong><br>${data.temperature}°C<br>${data.description}`;
+}
+
+function showMain() {
+  document.getElementById("login-section").style.display = "none";
+  document.getElementById("register-section").style.display = "none";
+  document.getElementById("main-section").style.display = "block";
+  document.getElementById("user-name-display").textContent = currentUser.user_name;
+  loadAvailability();
+  loadWeather();
 }

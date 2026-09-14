@@ -38,21 +38,34 @@
   </div>
 
   <!-- Main dashboard, shown after login -->
-  <div id="main-section" class="card" style="display:none;">
-    <div class="topbar">
-      <span>Logged in as <strong id="user-name-display"></strong></span>
-      <a href="#" onclick="logout()">Logout</a>
-    </div>
-    <h2>Study Spaces</h2>
-    <button onclick="loadAvailability()">Refresh</button>
-    <div id="spaces-list"></div>
+  <!-- Main dashboard, shown after login -->
+<div id="main-section" style="display:none;">
+  <div class="card topbar">
+    <span>Logged in as <strong id="user-name-display"></strong></span>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
 
-    <h2>Trends</h2>
-    <button onclick="loadTrends()">Load Trends</button>
-    <h3>Most-Used Spaces</h3>
-    <div id="trends-spaces"></div>
-    <h3>Busiest Hours of Day</h3>
-    <div id="trends-hours"></div>
+  <div class="dashboard-layout">
+    <div class="dashboard-main">
+      <div class="card">
+        <h2>Study Spaces</h2>
+        <button onclick="loadAvailability()">Refresh</button>
+        <div id="spaces-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Trends</h2>
+        <button onclick="loadTrends()">Load Trends</button>
+        <h3>Most-Used Spaces</h3>
+        <div id="trends-spaces"></div>
+        <h3>Busiest Hours of Day</h3>
+        <div id="trends-hours"></div>
+      </div>
+    </div>
+
+    <div class="dashboard-sidebar">
+      <div class="card weather-card" id="weather-display">Loading weather...</div>
+    </div>
   </div>
 </div>
 
